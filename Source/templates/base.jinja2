@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Python/Mongo DEMO web app: Croydon Borough Street Info Search &copy; Will Croxford 2017, All Rights Reserved</title>
+
+    <!-- to check back source code for Flatly theme elements: https://bootswatch.com/flatly -->
+
+    {% include 'html_dependencies.jinja2' %}
+
+</head>
+<body style="background-color: #2c3e50">
+<!-- navbar selected was #F89406 from http://www.flatuicolorpicker.com/category/orange then #8BC34A green 00c300 -->
+
+<nav class="navbar navbar-inverse hidden-print hidden-print"  style="background-color:#1a9e02">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#Street_Nav">
+        <span class="sr-only">Toggle navigation</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+    </div>
+
+
+    {% block content %}
+
+    {% endblock %}
+</div>
+
+</body>
+</html>

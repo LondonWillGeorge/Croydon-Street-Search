@@ -1,0 +1,100 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+    <div class="collapse navbar-collapse" id="Street_Nav">
+      <ul class="nav navbar-nav">
+        <li class="active"><a href="/" style="background-color:#13019e">New Search <span class="sr-only">(current)</span></a></li>
+        <li><a href="#" >Street Lists</a></li>
+        <li><a href="#">Street Reports</a></li>
+        <li><a href="/about.jinja2">About</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="content container">
+
+
+    <div class="jumbotron">
+        <h2 style="text-align:center">Croydon Borough Street Search</h2>
+        <p>This is a small demo application using Python 3 and MongoDB, with a Bootstrapped front end.
+        It shows how part of a repetitive council land charges search process could be done,
+        but available data is not complete. I have inserted a few of the street number ranges for each
+        'street section' from guessing, eg for Brighton Road (type "bri" for example in the street field to see),
+        but others missing. Roads which are TfL Side Roads, have split status, or cross borough boundaries
+        are shown (eg "Green Lane", "Monks Orchard Road", "Headley Drive"...).
+        &nbsp;&nbsp;&nbsp;
+        Or <a href="/about.jinja2" style="color:#00C300">click here</a> for further details on this project.
+        </p>
+
+<!-- how to get list_id to generate UUID4 here? way to call Python method in the action? -->
+<form class="form-horizontal" action = "{{ url_for('street_lists.get_streetlist') }}" method="post">
+  <fieldset>
+
+     <div class="form-group">
+        <label for="street" class="col-lg-1 control-label">Street</label>
+        <div class="col-lg-3">
+            <input class="form-control" id="street" name="street" pattern="^\S.{1,28}\S$"
+                   title="Sorry, you must type from 3 to 30 characters, and no space at beginning or end."
+                   placeholder="3 or more consecutive letters" required>
+            <!--  rows="1" required attribute needed because empty string bypasses the pattern regex. -->
+            <span class="help-block">e.g. just type "chu" for Church Road</span>
+        </div>
+
+        <label for="street" class="col-lg-1 control-label">Name or Number</label>
+        <div class="col-lg-4">
+            <textarea class="form-control" rows="1" id="number" name="number"
+                      placeholder="eg '31', '23a', 'Spring Cottage'"></textarea>
+            <span class="help-block">A property number or name here is preferable.</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <h4>&nbsp;&nbsp;&nbsp;&nbsp;Box C Streets</h4>
+    </div>
+
+    <div class="form-group">
+        <label for="c1" class="col-lg-2 control-label">C Street 1</label>
+        <div class="col-lg-4">
+            <textarea class="form-control" rows="1" id="c1" name="c1"></textarea>
+            <span class="help-block">As above, please just type 3 or more consecutive letters</span>
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+         <label for="c2" class="col-lg-2 control-label">C Street 2</label>
+         <div class="col-lg-4">
+            <textarea class="form-control" rows="1" id="c2" name="c2"></textarea>
+            <span class="help-block">In the rare case this has 2nd Box C street.</span>
+         </div>
+
+    </div>
+
+    <div class="form-group">
+
+        <label for="c3" class="col-lg-2 control-label">C Street 3</label>
+        <div class="col-lg-4">
+            <textarea class="form-control" rows="1" id="c3" name="c3"></textarea>
+            <span class="help-block">And exceptionally rarely if you have a third!</span>
+        </div>
+
+
+    </div>
+
+
+
+    <div class="form-group">
+        <div class="col-lg-10 col-lg-offset-2">
+            <button type="reset" class="btn btn-default">Clear</button>
+            <button type="submit" class="btn btn-primary">Show Me the Streets</button>
+        </div>
+    </div>
+  </fieldset>
+</form>
+
+    </div>
+
+
+{% endblock %}

@@ -1,0 +1,75 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+    <div class="collapse navbar-collapse" id="Street_Nav">
+      <ul class="nav navbar-nav">
+        <li><a href="/">New Search</a></li>
+        <li><a href="#" >Street Lists</a></li>
+        <li><a href="#">Street Reports</a></li>
+        <li class="active"><a href="/about.jinja2" style="background-color:#13019e">About<span class="sr-only">(current)</span></a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="content container">
+
+<div class="jumbotron">
+
+    <h3>About this Application</h3>
+
+    <p style="font-size:18px">This is a demonstration application (no commercial use as is) using Python 3 with the
+    Flask web application library, MongoDB, and Bootstrap with Jinja2 HTML template engine for Python, which is modelled
+    on Django templates. It uses the publicly
+    available Croydon Highways Register, and a second Mongo 'collection' (originally a table in SQL-based MS Access).
+    This second collection contains data on the Split Road, Split Borough and TfL side road status of the roads which
+    have this in Croydon, but where a street does have a TfL side road, this data is currently mostly missing the TfL side road
+    name (eg "A23").</p>
+
+    <p style="font-size:18px">I used PyCharm for coding and debugging this app.</p>
+
+    <h3>The Land Charges Search Process related to this Application</h3>
+    <p style="font-size:18px">This is a part of the CON29 section of the Land Charges search process for people considering
+    a property purchase in the UK. The CON29 form is a standard national form in the UK, produced by the Law Society, and
+    almost everyone who buys a property will first get a CON29 search done by their solicitor. Other information not available yet
+    includes environmental notices recorded against properties, local listed building statuses and more.</p>
+
+    <p style="font-size:18px"> If it could be scaled and used practically, it would also need to integrate geospatial data, making it a complex
+    and large project, perhaps using a link to the Ordnance Survey API, and storing this data in GeoJSON format which
+    Mongo supports.</p>
+
+    <h3>History of this Application so far</h3>
+    <p style="font-size:18px">I originally wrote this as an MS Access application (.MDB file) using VBA code after finishing a data entry temp
+    position in Croydon council, then learnt Python 3 and Mongo shell to put it online. My Access version is also really
+    a demo app, since in practice a large block of VBA code is an unnecessary maintenance risk/cost in this organisation.
+    Because of virus risks, nobody would dare open a .mdb file sent by email, which is another reason I rewrote it for
+    online demo!</p>
+
+    <p style="font-size:18px">Obviously, this is a small application which would be fine to use a SQL database such as Postgre or MySQL, but
+    since I had used SQL already in the Access app, and to demo potential scalablity and gain experience of a highly
+    scalable database, I used Mongo in this application.</p>
+
+    <p style="font-size:18px">At present, it is missing user login functionality, which time permitting, may add in future, storing the user
+    emails and PBKDF2-SHA512 double-hashed passwords in a separate Users collection in the database.</p>
+
+    <p style="font-size:18px">To begin learning Python 3, I followed most of "Learn Python the Hard Way" ebook online, followed by a Udemy course,
+    https://www.udemy.com/the-complete-python-web-course-learn-by-building-8-apps by Jose Salvatierra. Then got much more
+    Python 3 experience by writing this. Also solved a "medium" rank problem on one of the live challenges on Hacker Rank
+    in Python, which works for 9 of 11 test inputs.</p>
+
+    <h3>"Box C Streets" Meaning in this Application</h3>
+    <p style="font-size:18px">In the Land Charges search process, the property buyer's solicitor may want to check status information for one or
+    more side streets to the street where the property is addressed. For example, if the property is on or near a road
+    junction, or if the back garden of a property abuts a busy street etc. then knowing whether or not this back road
+    is a TfL maintained road or private road etc. could possibly affect a purchasing decision or property value.</p>
+
+    <p style="font-size:18px">These side streets are called "Box C" streets on the standard CON29 form.</p>
+
+    <p style="font-size:18px">In practice, perhaps much of this whole process has an 'insurance' value for the buyer; in most cases this data may not matter much
+    to the average buyer or affect the property value much, but the total cost of a land charges search is usually low
+    compared to the price of even a small property purchase.</p>
+
+</div>
+
+{% endblock %}
+
