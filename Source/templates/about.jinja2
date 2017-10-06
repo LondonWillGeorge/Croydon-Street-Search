@@ -16,17 +16,22 @@
 
 <div class="jumbotron">
 
-    <h3>About this Application</h3>
+    <h3>Technical Details of Application</h3>
 
     <p style="font-size:18px">This is a demonstration application (no commercial use as is) using Python 3 with the
-    Flask web application library, MongoDB, and Bootstrap with Jinja2 HTML template engine for Python, which is modelled
-    on Django templates. It uses the publicly
-    available Croydon Highways Register, and a second Mongo 'collection' (originally a table in SQL-based MS Access).
-    This second collection contains data on the Split Road, Split Borough and TfL side road status of the roads which
-    have this in Croydon, but where a street does have a TfL side road, this data is currently mostly missing the TfL side road
-    name (eg "A23").</p>
+    Flask web application library, MongoDB, and Bootstrap with Jinja2 HTML template engine for Python, Flask and Jinja2
+        being modelled on Django templates, and is hosted on CentOS 7 Linux on a Digital Ocean droplet, served with nginx and uWSGI.
+    It uses the publicly available Croydon Highways Register 2015 version from a public website address, and a second
+    Mongo 'collection' (originally a table in SQL-based MS Access). This second collection contains data on the Split
+    Road, Split Borough and TfL side road status of the roads which have this in Croydon, but where a street does have
+    a TfL side road, this data is currently mostly missing the TfL side road name (eg "A23").</p>
+    <p style="font-size:18px">I have attempted to produce RESTful API type URLs (webpage addresses) for the street list and street report pages, by adding a separate
+    consecutive numbered id field to the Mongo data, and passing this in the street report URL. Conversely, the street list URL contains the
+    actual search terms entered by the user. In this way, unique street list or street report searches have their own
+    unique, reasonably short and hopefully reasonably clear URL</p>
 
-    <p style="font-size:18px">I used PyCharm for coding and debugging this app.</p>
+    <p style="font-size:18px">I used PyCharm for coding and debugging this app. Please email me any questions:
+        <a href="mailto:will_croxford@hotmail.com?Subject=Python%20Demo%20App%20Enquiry">will_croxford@hotmail.com</a></p>
 
     <h3>The Land Charges Search Process related to this Application</h3>
     <p style="font-size:18px">This is a part of the CON29 section of the Land Charges search process for people considering
@@ -50,12 +55,16 @@
     scalable database, I used Mongo in this application.</p>
 
     <p style="font-size:18px">At present, it is missing user login functionality, which time permitting, may add in future, storing the user
-    emails and PBKDF2-SHA512 double-hashed passwords in a separate Users collection in the database.</p>
+    emails and PBKDF2-SHA512 double-hashed passwords in a separate Users collection in the database. The Street Lists
+    and Street Reports buttons, unused at present, could show lists of each user's saved lists or reports, and a demo function to enter and save
+        'dummy' streets in the database may also be helpful.</p>
 
     <p style="font-size:18px">To begin learning Python 3, I followed most of "Learn Python the Hard Way" ebook online, followed by a Udemy course,
     https://www.udemy.com/the-complete-python-web-course-learn-by-building-8-apps by Jose Salvatierra. Then got much more
     Python 3 experience by writing this. Also solved a "medium" rank problem on one of the live challenges on Hacker Rank
-    in Python, which works for 9 of 11 test inputs.</p>
+        in Python 2, which works for 9 of 11 test inputs. (This problem is
+        <a href="https://www.hackerrank.com/contests/code-and-the-curious/challenges/sell-statistics-query-system/problem">here</a>.
+        My solution attempt is <a href="/../Hacker_Solution.jinja2" style="color:#00C300">here</a>, which can be pasted and validated in the problem page.)</p>
 
     <h3>"Box C Streets" Meaning in this Application</h3>
     <p style="font-size:18px">In the Land Charges search process, the property buyer's solicitor may want to check status information for one or

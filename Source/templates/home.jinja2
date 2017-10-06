@@ -12,19 +12,57 @@
   </div>
 </nav>
 
+<script>
+
+function showExpl(){
+        document.getElementById('Explanation').style.display = "block";
+        document.getElementById('showbut').style.display = "none";
+        document.getElementById('hidebut').style.display = "block";
+}
+
+function toggleExpl(){
+        if(document.getElementById('Explanation').style.display=='block'){
+            document.getElementById('Explanation').style.display = "none";
+            document.getElementById('showbut').style.display = "block";
+            document.getElementById('hidebut').style.display = "none";
+        }
+        else if(document.getElementById('Explanation').style.display=='none'){
+            document.getElementById('Explanation').style.display = "block";
+            document.getElementById('showbut').style.display = "none";
+            document.getElementById('hidebut').style.display = "block";
+        }
+}
+
+</script>
+
 <div class="content container">
 
 
     <div class="jumbotron">
-        <h2 style="text-align:center">Croydon Borough Street Search</h2>
-        <p>This is a small demo application using Python 3 and MongoDB, with a Bootstrapped front end.
-        It shows how part of a repetitive council land charges search process could be done,
-        but available data is not complete. I have inserted a few of the street number ranges for each
+
+        <div id="topline" class="row">
+            <div class="col-lg-3">
+        <button class="btn btn-primary" onclick="toggleExpl()" id="hidebut" style="background-color:#72c10b">&nbsp;Hide Explanation&nbsp;</button>
+        <button class="btn btn-primary" onclick="toggleExpl()" id="showbut" style="background-color:#72c10b">Show Explanation</button>
+            </div>
+            <div class="col-lg-6">
+            <h2 style="text-align:center">Croydon Borough Street Search</h2>
+            </div>
+        </div>
+        <p>This is a small demo application using Flask with Python 3 and MongoDB, and a Bootstrapped front end,
+            hosted on CentOS 7 Linux in a Digital Ocean droplet, served via nginx and uWSGI.</p>
+        <div id="Explanation">
+        <p>You search for a main street in Croydon borough, and zero to three 'Box C' side streets on this page,
+        entering only a few letters for speed and convenience. A second page gives you specific street choices, and
+        then a final page is a ready-to-print report on (the first few) relevant features of these street(s) for the
+        UK property conveyancing land charges search process. For someone with several searches to make quickly at the
+            same time, they can easily open a new browser tab for each search.</p>
+        <p>This is a first step for possible method on how part of this repetitive council land charges search process
+        could be done, but available data is not complete. I have inserted a few of the street number ranges for each
         'street section' from guessing, eg for Brighton Road (type "bri" for example in the street field to see),
-        but others missing. Roads which are TfL Side Roads, have split status, or cross borough boundaries
-        are shown (eg "Green Lane", "Monks Orchard Road", "Headley Drive"...).
-        &nbsp;&nbsp;&nbsp;
-        Or <a href="/about.jinja2" style="color:#00C300">click here</a> for further details on this project.
+        but others missing. Roads which are TfL (Transport for London) Side Roads, have split status, or cross borough boundaries
+            should all be shown (eg "Green Lane", "Monks Orchard Road", "Headley Drive"...).</p></div>
+        <p>Try it below, or <a href="/about.jinja2" style="color:#00C300">click here</a> for further details on this project.
         </p>
 
 <!-- how to get list_id to generate UUID4 here? way to call Python method in the action? -->
