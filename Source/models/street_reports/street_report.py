@@ -1,22 +1,30 @@
 # import pymongo
+import dateutil
+
 from Source.common.database import Database
 from Source.common.utils import NumRange, post_dist
 # from bson.objectid import ObjectId
 
-import datetime
+from datetime import datetime
+from dateutil import tz
+
+# Time problem! At moment, time shown is 1 hour behind UK summer time, probably this is just UTC actually.
+# Dig Ocean server is in Amsterdam, which is 1 hour ahead of summer time, so nothing to do with this I think.
+# next commit try hack of just adding 1 hour to the time variable? nobody outside UK is going to see this now!
 
 # Do we need the date field in the URL? Would be simpler without it.
 # If not, then each time you bring up the report as GET request, it will default to current time.
 # Then bringing up actual reports saved would be a different thing, with different URL.
 # Surely would need to implement logins to do that anyway...?
 # Later, can have function to save StreetReport object to a separate Mongo Reports collection,
-# including all the properties, plus from form access ref number and comments box text.
+# and Street Reports button on page will show list of reports made by current user.
 
-# Remember if street data changes later, reloading the same StreetReport object could produce a different report.
+# Remember if underlying street data changes later, reloading the same StreetReport object could produce a different report.
 
 # A street report has properties of a title, the main street blurb, the side street blurbs, a date!
-# A default reference number property which is entered in a textbox, and any other comments, entered in another
+# Also a default reference number property which is entered in a textbox, and any other comments, entered in another
 # textbox.
+# On street report page, these all display as ready to print, it is final page in the app as at 6-10-2017.
 
 class StreetReport(object):
     def __init__(self, title, maintext, side1text=None, side2text=None, side3text=None, datestring = None,
@@ -31,7 +39,7 @@ class StreetReport(object):
         self.comments = comments
 
     # .maintained method takes a street record dictionary as argument.
-    # doesn't use any class or instance attributes, therefore can make static method.
+    # doesn't use any class or instance attributes, therefore we can make it a static method.
     @staticmethod
     def maintained(strt):
         if strt["Adoption Status"] == "Adopted":
@@ -50,8 +58,8 @@ class StreetReport(object):
 
         return maintained_by
 
-    # uses .maintained method of this class, so should be a class method.
-    # stringified str() street and district fields, to avoid int not str error.
+    # This method uses .maintained method of this class, so should be a class method.
+    # stringified str() street and district fields, to avoid getting int not str error.
     @classmethod
     def main_text(cls, Main, namenum):
         main_street = str(Main["Street"])
@@ -76,7 +84,9 @@ class StreetReport(object):
                                         "District": {'$in': [Dist_Or_Integer, str(main_district), ""]}})
         # was: extra_info = Database.find_one("Three_Questions", {"Street": main_street, "District": main_district})
 
-        # if all numbers, change phrasing here...
+
+        # main_string and extra_info compose text strings to show on the report page, according to
+        # content of the returned data on chosen street(s) from Mongo.
         mainrange = NumRange(Main).range
 
         main_string = main_street + ", " + long_district + ", "
@@ -139,25 +149,27 @@ class StreetReport(object):
         else:
             return ""
 
-    # mainselection is MongoID main street, sideselection is list sidestreet 1 2 3 IDs, namenum is string
-        # need to find the records from Mongo again, using the IDs
-        # But Mongo default _id field uses special BSON ObjectId data type/function which we import above,
-        # which is not included in pymongo package, very confusing! Would be better to replace default ID with
-        # own UUID id field, like tutor jslvtr did in Udemy video! BSON is 'superset' of JSON....
+    # create_report method queries Mongo again, using my custom sequenced ID numbers, to return the street info for this report.
+
+    # mainselection is my custom created Mongo ID field number for the main street,
+    # sideselection is same ID for any side streets 1 2 3, namenum is string representing the property name or number
+    # which user entered on the first search page.
 
     # 25-9-17 changed search to query on id field which I have created, not Mongo default _id ObjectId field.
-    # So shorter URLs can be produced, using this id field.
+    # So shorter RESTful type URLs can be produced, using this id field.
     # NB mainselection is a string value when it comes in, so int() convert to integer for query to run.
     @classmethod
     def create_report(cls, mainselection, side1, side2, side3, namenum):
         # was: Main = Database.find_one("Highways_Register", ObjectId(mainselection))
         Main = Database.find_one("Highways_Register", {"id": int(mainselection)})
         report_title, main_string = cls.main_text(Main, namenum)
-        # Initialize 2 arrays to produce 0 to 3 street record dictionaries corresponding to sideselection parameter.
-        # Could do it with 1 array, but this would be less readable?
+        # Below initializes 2 arrays to produce 0 to 3 street record dictionaries corresponding to sideselection parameter.
+        # I could do it with 1 array, but this would be less readable perhaps?
         C = ["", "", ""]; sidetext = ["", "", ""]; sidedict = {0: side1, 1: side2, 2: side3}
 
         # was: C[ind] = Database.find_one("Highways_Register", ObjectId(sidedict.get(ind)))
+
+        # retrieves info from Mongo on 0 to 3 side streets user has chosen.
         for ind in range(3):
             if sidedict.get(ind) != "--":
                 C[ind] = Database.find_one("Highways_Register", {"id": int(sidedict.get(ind))})
@@ -166,7 +178,18 @@ class StreetReport(object):
                 sidetext[ind] = ""
         # should end up with size 3 array: sidetext, to return to the webpage.
 
-        date=datetime.datetime.now()
+        # composes date string to be displayed on the report.
+        # was: date=datetime.datetime.now()
+
+        # Now use TZ Olson Database API to Auto-detect time zones:
+        from_zone = tz.tzutc()
+        to_zone = tz.tzlocal()
+        utc = datetime.utcnow()
+        # Tell the datetime object that it's in UTC time zone since datetime objects are 'naive' by default
+        utc = utc.replace(tzinfo=from_zone)
+        # Convert time zone
+        date = utc.astimezone(to_zone)
+
         date_string = "Report time is " + date.strftime("%I:%M%p") + " on " + date.strftime("%A %d %B %Y")
 
         return cls(report_title, main_string, sidetext[0], sidetext[1], sidetext[2], date_string)

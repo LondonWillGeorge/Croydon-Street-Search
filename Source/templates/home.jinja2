@@ -40,15 +40,22 @@ function toggleExpl(){
 
     <div class="jumbotron">
 
-        <div id="topline" class="row">
-            <div class="col-lg-3">
+        <table id="topline" class="row"  style="width:100%">
+            <tr>
+            <td style="width:85%">
+                <h2 style="text-align:center">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Croydon Borough Street Search</h2>
+            </td>
+            <td style="width:15%">
+                <br/>
+                <h4 id="hidebut" onclick="toggleExpl()" style="text-decoration:underline; color:#72c10b; cursor:pointer;">Hide Intro</h4>
+                <h4 id="showbut" onclick="toggleExpl()" style="text-decoration:underline; color:#72c10b; cursor:pointer;">Show Intro</h4>
+<!--
         <button class="btn btn-primary" onclick="toggleExpl()" id="hidebut" style="background-color:#72c10b">&nbsp;Hide Explanation&nbsp;</button>
         <button class="btn btn-primary" onclick="toggleExpl()" id="showbut" style="background-color:#72c10b">Show Explanation</button>
-            </div>
-            <div class="col-lg-6">
-            <h2 style="text-align:center">Croydon Borough Street Search</h2>
-            </div>
-        </div>
+-->
+            </td>
+            </tr>
+        </table>
         <p>This is a small demo application using Flask with Python 3 and MongoDB, and a Bootstrapped front end,
             hosted on CentOS 7 Linux in a Digital Ocean droplet, served via nginx and uWSGI.</p>
         <div id="Explanation">

@@ -1,11 +1,18 @@
-
-/*!
- * not sure if css code written here can work for some reason, it is seeing this file with no 404 error
- # but doesn't seem to execute any css placed in it???, check Stack Overflow
- # doubly weird is that without this file, the bootstrap striped table class shows white and grey stripes, but with this
- # file empty, it shows red and white stripes.
+/* Cache problem in Chrome and IE on local computer, picking up custom CSS file!
+ doubly weird is that without this file, the bootstrap striped table class shows white and grey stripes, but with this
+ file empty, it shows red and white stripes.
  */
 
+/*
  .radio-toolbar input[type="radio"]:checked+label {
   background-color: #f00;
+}*/
+
+body {
+    background-color: red;
 }
+
+button {
+    background-color: red;
+}
+

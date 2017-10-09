@@ -32,7 +32,10 @@ def init_db():
 def home():
     return render_template('home.jinja2', list_id=uuid.uuid4().hex)
 
-
 @app.route('/about.jinja2')
-def info_popup():
+def about():
     return render_template('about.jinja2')
+
+@app.route('/Hacker_Solution.jinja2')
+def hacker():
+    return render_template('Hacker_Solution.jinja2')
