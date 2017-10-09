@@ -12,7 +12,11 @@ body {
     background-color: green;
 }
 
+/*
+Move more CSS code in here later, now confirmed it is picking up this file.
+Also move JS code into JS folder, and later any images to images folder.
 button {
     background-color: red;
 }
+*/
 

@@ -5,7 +5,8 @@ from Source.common.database import Database
 from Source.common.utils import NumRange, post_dist
 # from bson.objectid import ObjectId
 
-from datetime import datetime
+import datetime
+# from datetime import datetime
 from dateutil import tz
 
 # Time problem! At moment, time shown is 1 hour behind UK summer time, probably this is just UTC actually.
@@ -179,16 +180,19 @@ class StreetReport(object):
         # should end up with size 3 array: sidetext, to return to the webpage.
 
         # composes date string to be displayed on the report.
-        # was: date=datetime.datetime.now()
 
         # Now use TZ Olson Database API to Auto-detect time zones:
-        from_zone = tz.tzutc()
-        to_zone = tz.tzlocal()
-        utc = datetime.utcnow()
-        # Tell the datetime object that it's in UTC time zone since datetime objects are 'naive' by default
-        utc = utc.replace(tzinfo=from_zone)
-        # Convert time zone
-        date = utc.astimezone(to_zone)
+        # from_zone = tz.tzutc()
+        # to_zone = tz.tzlocal()
+        # utc = datetime.utcnow()
+        # # Tell the datetime object that it's in UTC time zone since datetime objects are 'naive' by default
+        # utc = utc.replace(tzinfo=from_zone)
+        # # Convert time zone
+        # date = utc.astimezone(to_zone)
+
+        # above tz code from Stack Overflow still producing wrong time when run on server.
+        # when run on my local computer, does produce correct time, so using hack below now for UK DST time!
+        date = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
 
         date_string = "Report time is " + date.strftime("%I:%M%p") + " on " + date.strftime("%A %d %B %Y")
 
