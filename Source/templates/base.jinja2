@@ -11,11 +11,20 @@
     {% include 'html_dependencies.jinja2' %}
 
 </head>
-<!--body was style="background-color: #2c3e50" -->
-<body onload="showExpl()">
+<body id="tameboot" onload="showExpl()">
 <!-- navbar selected was #F89406 from http://www.flatuicolorpicker.com/category/orange then #8BC34A green 00c300 -->
+<noscript>
+    <style type="text/css">
+        .pagecontainer {display:none;}
+    </style>
+    <div class="jumbotron">
+        <h2 class="noJS">You don't have Javascript enabled.<br/><br/>
+            Sorry, but this site, in common with Gmail, Facebook... most interactive websites on the Internet, needs Javascript to work properly.<br/><br/>
+    You can search "Javascript enable disable Chrome" or "Javascript enable disable IE" or whatever browser you're using to enable it (turn it on again)!
+    </h2></div>
+</noscript>
 
-<nav class="navbar navbar-inverse hidden-print hidden-print"  style="background-color:#1a9e02">
+<nav class="navbar navbar-inverse hidden-print hidden-print pagecontainer"  style="background-color:#1a9e02">
   <div class="container">
     <div class="navbar-header">
       <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#Street_Nav">
@@ -27,10 +36,40 @@
 
     </div>
 
+    <div class="collapse navbar-collapse" id="Street_Nav">
+      <ul class="nav navbar-nav">
 
-    {% block content %}
+        {% if request.path == '/' %}
+        <li class="active"><a href="/" class="activebutton">New Search<span class="sr-only">(current)</span></a></li>
+        {% else %} <li><a href="/">New Search</a></li> {% endif %}
 
-    {% endblock %}
+        {% if request.path == '#' or request.path == '{{ url_for(&apos;street_lists.get_streetlist&apos;) }}' %}
+        <li class="active"><a href="#" class="activebutton">Street Lists<span class="sr-only">(current)</span></a></li>
+        {% else %} <li><a href="#">Street Lists</a></li> {% endif %}
+
+        {% if request.path == '#' or request.path == '{{ url_for(&apos;street_reports.get_streetreport&apos;, number=number) }}' %}
+        <li class="active"><a href="#" class="activebutton">Street Reports<span class="sr-only">(current)</span></a></li>
+        {% else %} <li><a href="#">Street Reports</a></li> {% endif %}
+
+        {% if request.path == '/streets/new_street.jinja2' %}
+        <li class="active"><a href="/streets/new_street.jinja2" class="activebutton">Add Dummy Street<span class="sr-only">(current)</span></a></li>
+        {% else %} <li><a href="/streets/new_street.jinja2">Add Dummy Street</a></li> {% endif %}
+
+        {% if request.path == '/about.jinja2' or request.path == '/Hacker_Solution.jinja2' %}
+        <li class="active"><a href="/about.jinja2" class="activebutton">About<span class="sr-only">(current)</span></a></li>
+        {% else %} <li><a href="/about.jinja2">About</a></li> {% endif %}
+
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="content container pagecontainer">
+    <div class="jumbotron">
+        {% block content %}
+
+        {% endblock %}
+    </div>
 </div>
 
 </body>

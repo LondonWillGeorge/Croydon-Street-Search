@@ -1,17 +1,6 @@
 {% extends "base.jinja2" %}
 {% block content %}
 
-    <div class="collapse navbar-collapse" id="Street_Nav">
-      <ul class="nav navbar-nav">
-        <li><a href="/">New Search </a></li>
-        <li><a href="#" >Street Lists</a></li>
-        <li class="active"><a href="#" style="background-color:#13019e">Street Reports<span class="sr-only">(current)</span></a></li>
-        <li><a href="/about.jinja2">About</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
 <script>
     // JS for operating the Print button at bottom of page. Note the Print button class, nav bar class etc.
     // have 'hidden-print' Bootstrap class inserted, to stop unwanted parts of page printing.
@@ -20,45 +9,48 @@
 }
 </script>
 
-<div class="content container">
-    <div class="jumbotron">
-
-        <!-- div class="page-header">
-            <h2>Street Report</h2>
-        </div -->
 <form class="form-horizontal">
     <fieldset>
         <div class="form-group has-warning">
-        <div class="col-lg-4">
-          <label class="control-label hidden-print" for="Ref">Please Enter Reference Number</label>
-          <input type="text" class="form-control" id="Ref">
-        </div>
-            <div class="col-lg-2">
+            <div class="col-lg-4">
+              <label class="control-label hidden-print" for="Ref">Please Enter Reference Number</label>
+              <input type="text" class="form-control" id="Ref">
             </div>
-        <div class="col-lg-6">
-            <h4 style="margin-top: 45px">{{ report.datestring }}</h4>
-        </div>
+                <div class="col-lg-2">
+                </div>
+            <div class="col-lg-6">
+                <h4 class="date">{{ report.datestring }}</h4>
+            </div>
         </div>
     </fieldset>
 </form>
 
-
-
-        <div class="panel panel-primary">
-  <div class="panel-heading">
-      <div class="panel-title" style="font-size:21px">CON29 Street Report for: {{ report.title }}</div>
-  </div>
-  <div class="panel-body">
-    {{ report.maintext }}
-  </div>
-</div>
+    <div class="panel panel-primary">
+    {% if report.maindummy == False %}
+        <div class="panel-heading">
+    {% else %}
+           <!-- custom CSS colours seem unable to override Bootstrap panel-heading class-->
+        <div class="panel-heading dummytitle">
+    {% endif %}
+            <div class="panel-title title_font">CON29 Street Report for: {{ report.title }}</div>
+        </div>
+          <div class="panel-body">
+              {% if report.maindummy == True %}<div class="dummywarn">THIS IS A DUMMY STREET ENTERED IN THIS APP, NOT A 'REAL' STREET.<br/></div>{% endif %}
+            {{ report.maintext }}
+          </div>
+    </div>
 
 {% if (report.side1text != "") %}
     <div class="panel panel-primary">
-      <div class="panel-heading">
+    {% if report.side1dummy == False %}
+        <div class="panel-heading">
+    {% else %}
+        <div class="panel-heading dummytitle">
+    {% endif %}
         <h3 class="panel-title">Box C Street 1</h3>
       </div>
       <div class="panel-body">
+          {% if report.side1dummy == True %}<div class="dummywarn">THIS IS A DUMMY STREET ENTERED IN THIS APP, NOT A 'REAL' STREET.<br/></div>{% endif %}
         {{ report.side1text }}
       </div>
     </div>
@@ -66,10 +58,15 @@
 
 {% if (report.side2text != "") %}
     <div class="panel panel-primary">
-      <div class="panel-heading">
-        <h3 class="panel-title">Box C Street 2</h3>
-      </div>
+        {% if report.side2dummy == False %}
+            <div class="panel-heading">
+        {% else %}
+            <div class="panel-heading dummytitle">
+        {% endif %}
+            <h3 class="panel-title">Box C Street 2</h3>
+            </div>
       <div class="panel-body">
+          {% if report.side2dummy == True %}<div class="dummywarn">THIS IS A DUMMY STREET ENTERED IN THIS APP, NOT A 'REAL' STREET.<br/></div>{% endif %}
         {{ report.side2text }}
       </div>
     </div>
@@ -77,10 +74,15 @@
 
 {% if (report.side3text != "") %}
     <div class="panel panel-primary">
-      <div class="panel-heading">
+        {% if report.side3dummy == False %}
+            <div class="panel-heading">
+        {% else %}
+            <div class="panel-heading dummytitle">
+        {% endif %}
         <h3 class="panel-title">Box C Street 3</h3>
-      </div>
+            </div>
       <div class="panel-body">
+          {% if report.side3dummy == True %}<div class="dummywarn">THIS IS A DUMMY STREET ENTERED IN THIS APP, NOT A 'REAL' STREET.<br/></div>{% endif %}
         {{ report.side3text }}
       </div>
     </div>
@@ -108,6 +110,7 @@
         <!-- p>test report id: {{ reportid }}</p -->
 
     </div>
+
 {% endblock %}
 
 <!-- testing, this comment is OK here, but if you put in wrong place inside Jinja tags,

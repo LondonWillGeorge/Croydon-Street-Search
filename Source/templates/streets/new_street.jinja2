@@ -1,0 +1,304 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+
+                <h2 style="text-align:center">Add a <span class="red">Dummy</span> Street</h2>
+
+<p>You can create a <span class="red">Dummy</span> street here, which you will be able to search for in this application. This is to
+demonstrate how a real Create &amp; Update Process could work for this application, without corrupting the original
+    data. <span class="red">Dummy</span> streets show up <span class="red">red</span> in search results.</p>
+
+<p>{{ result }}</p>
+
+<form class="form-horizontal" action = "{{ url_for('streets.create_street') }}" method="post">
+  <fieldset>
+
+     <div class="form-group">
+
+        <div class="col-lg-6">
+            <label for="stname" class="control-label">Street Name</label>
+            <input class="form-control" id="stname" name="stname" pattern="^\S.{3,98}\S$"
+                   title="Sorry, you must type from 5 to 100 characters, and no space at beginning or end."
+                   placeholder="Full Street Name" required>
+            <!--  required attribute needed because empty string bypasses the pattern regex. -->
+            <span class="help-block">NB: No naughty word streets please, these will be deleted by admin!</span>
+        </div>
+
+<!-- CR, CL, PR, 25, 16, 19, BE, KN, SC, TH, WA, WH -->
+        <div class="col-lg-3">
+            <label for="distr" class="control-label">Postal District</label>
+            <select class="form-control" id="distr" name="distr">
+              <option value="0">Croydon (CR0, CR2, CR7 or CR9)</option>
+              <option value="1">Coulsdon CR5</option>
+              <option value="2">Purley CR8</option>
+              <option value="3">London SE25</option>
+              <option value="4">London SW16</option>
+              <option value="5">Kenley CR8</option>
+              <option value="6">South Croydon CR2</option>
+              <option value="7">Thornton Heath CR7</option>
+              <option value="8">Warlingham CR6</option>
+              <option value="9">Whyteleafe CR3</option>
+              <option value="10">Beckenham BR3</option>
+              <option value="11">London SW19</option>
+            </select>
+            <span class="help-block">NB: Original data uses postal district only, hence problem of several postcodes for 'Croydon'.</span>
+        </div>
+
+        <div class="col-lg-3">
+            <label for="maint" class="control-label">Who looks after this street?</label>
+            <select class="form-control" id="maint" name="maint">
+              <option value="0">Croydon Borough</option>
+              <option value="1">Transport for London</option>
+              <option value="2">Private Road</option>
+            </select>
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        <h4 class="centre">Property/Door Number Range for this Street Section<br/><small>Please leave as None if all properties in this section have names</small></h4>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-3">
+            <label for="onb" class="control-label">Odd Numbers From</label>
+            <input class="form-control" id="onb" name="onb" value="None" pattern="^\d*[13579]$|(None)" title="Odd Numbers only please with no spaces, or None">
+            <span class="help-block">e.g. '1' or '111'</span>
+        </div>
+
+        <div class="col-lg-3">
+            <label for="one" class="control-label">Odd Numbers To</label>
+            <input class="form-control" disabled id="one" name="one" value="None" pattern="^\d*[13579]$|(None)" title="Odd Numbers only please with no spaces, or None">
+            <span class="help-block">e.g. '31' or '217'</span>
+        </div>
+
+        <div class="col-lg-3">
+            <label for="enb" class="control-label">Even Numbers From</label>
+            <input class="form-control" disabled id="enb" name="enb" value="None" pattern="^\d*[02468]$|(None)" title="Even Numbers only please with no spaces, or None">
+            <span class="help-block">e.g. '2' or '110'</span>
+        </div>
+
+        <div class="col-lg-3">
+            <label for="ene" class="control-label">Even Numbers To</label>
+            <input class="form-control" disabled id="ene" name="ene" value="None" pattern="^\d*[02468]$|^(None)$" title="Even Numbers only please with no spaces, or None">
+            <span class="help-block">e.g. '32' or '216'</span>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-3">
+            <label for="rdclass" class="control-label">Road Class</label>
+            <select class="form-control" id="rdclass" name="rdclass">
+              <option value="0">Unclassified</option>
+              <option value="1">A Road</option>
+              <option value="2">B Road</option>
+              <option value="3">C Road</option>
+            </select>
+            <span class="help-block">Leave as Unclassified if in any doubt.</span>
+        </div>
+
+        <div class="col-lg-3">
+            <!-- JS here to put in A B C / disable depending on what selected in rdclass box -->
+            <label for="rdnum" class="control-label">Road Number</label>
+            <div class="input-group">
+                <span class="input-group-addon" id="rdletter"></span>
+                <input class="form-control" disabled id="rdnum" name="rdnum" pattern="^[1-9][0-9]*$|^(None)$" title="Must be whole number following road class, no spaces!" value="None" required>
+            </div>
+            <span class="help-block">E.g. 'A232', 'C3241'</span>
+        </div>
+
+        <div class="col-lg-1">
+        </div>
+
+        <div class="col-lg-4">
+            <label for="length" class="control-label">Length of this Street Section (whole no. metres)</label>
+            <div class="input-group">
+                <input class="form-control" id="length" name="length" value= 0 pattern="^[1-9][0-9]*$" title="Whole number of metres please, no spaces!" required>
+                <span class="input-group-addon metres"> metres</span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group">
+
+        <div class="col-lg-1">
+        </div>
+
+        <div class="col-lg-3">
+            <label class="control-label left">Does one end of this street adjoin a TfL maintained street?</label>
+            <select class="form-control" id="TfL" name="TfL">
+              <option value="0" selected>No</option>
+              <option value="1">Yes</option>
+            </select>
+        </div>
+
+        <div class="col-lg-2">
+        </div>
+
+        <div class="col-lg-4">
+            <!-- JS not working yet to disable only if no selected in rdclass box -->
+            <label class="control-label"><br/>&nbsp;Road Number of Adjoining TfL Road?</label>
+
+            <input class="form-control" disabled pattern="^[ABC][1-9][0-9]*$|^(None)$"
+                   title="Must be None, or A, B or C followed by a whole number, no spaces!" value="None" id="TfLroad"
+                   name="TfLroad" required>
+
+           <span class="help-block">E.g. 'A232', 'A23'</span>
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-5">
+            <label class="control-label left">Adjoining Borough</label>
+            <select class="form-control" id="cross1" name="cross1">
+              <option value="0">Doesn't Cross Other Borough</option>
+              <option value="1">London Borough of Lambeth</option>
+              <option value="2">London Borough of Sutton</option>
+              <option value="3">Reigate and Banstead District Council</option>
+              <option value="4">London Borough of Bromley</option>
+              <option value="5">London Borough of Merton</option>
+              <option value="6">Tandridge District Council</option>
+            </select>
+        </div>
+
+        <div class="col-lg-2">
+        </div>
+
+        <div class="col-lg-5">
+            <label class="control-label left">2nd Adjoining Borough (rare case)</label>
+            <select class="form-control" disabled id="cross2" name="cross2">
+              <option value="0">None</option>
+              <option value="1">London Borough of Lambeth</option>
+              <option value="2">London Borough of Sutton</option>
+              <option value="3">Reigate and Banstead District Council</option>
+              <option value="4">London Borough of Bromley</option>
+              <option value="5">London Borough of Merton</option>
+              <option value="6">Tandridge District Council</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="form-group">
+        <div class="col-lg-2">
+            <label class="control-label left">Does this street have a split status?</label>
+            <select class="form-control" id="Split" name="Split">
+              <option value="0" selected>No</option>
+              <option value="1">Yes</option>
+            </select>
+        </div>
+
+        <div class="col-lg-2">
+        </div>
+
+        <div class="col-lg-6">
+            <label class="control-label"><br/>Split As (select all which apply to this road section)</label>
+            <div class="input-group splitchecks" id="Splitas">
+                <input class="checko" type="checkbox" disabled value="Nil" name="status" id="split1"><span class="chktext"> Nil </span>
+                <input class="checko" type="checkbox" disabled value="Local" name="status" id="split2"><span class="chktext"> Local </span>
+                <input class="checko" type="checkbox" disabled value="London" name="status" id="split3"><span class="chktext"> London </span>
+                <input class="checko" type="checkbox" disabled value="Strategic" name="status" id="split4"><span class="chktext"> Strategic </span>
+                <input class="checko" type="checkbox" disabled value="TfL" name="status" id="split5"><span class="chktext"> TfL </span>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="form-group">
+        <div class="centre">
+            <!-- hiding now as reset interferes JS validation: <button type="reset" id="resetform" class="btn btn-default">Reset Form</button> -->
+            <button type="submit" class="btn btn-primary">Create Street</button>
+        </div>
+    </div>
+  </fieldset>
+</form>
+
+<script>
+
+/* JS statements in order:
+1 - if TfL is set to Yes, enables which TfL road box, otherwise this box is disabled
+2 - if TfL is Yes and TfL road number box now enabled, previously clicking reset form would reset the TfL to no,
+but would not set which TfL road box back to disabled. This statement trying to correct that, but now need to click
+twice before it does this - leave for now.
+3 - last 3 road number boxes set disabled by default in HTML. With this statement, if user changes 'None' to any other
+input, the other 3 boxes now enabled.
+
+*/
+
+document.getElementById('TfL').onchange = function () {
+  document.getElementById("TfLroad").disabled = (this.value === '0');
+}
+
+document.getElementById('onb').oninput = function () {
+  document.getElementById("one").disabled = (this.value === 'None');
+  document.getElementById("enb").disabled = (this.value === 'None');
+  document.getElementById("ene").disabled = (this.value === 'None');
+}
+
+document.getElementById('rdclass').onchange = function () {
+    if (this.value === '0') {
+      document.getElementById("rdnum").disabled = true;
+      document.getElementById("rdnum").value = "None";
+      document.getElementById("rdletter").textContent = "";
+    }
+    if (this.value === '1') {
+      document.getElementById("rdnum").disabled = false;
+      document.getElementById("rdnum").value = "?";
+      document.getElementById("rdletter").textContent = "A";
+    }
+    if (this.value === '2') {
+      document.getElementById("rdnum").disabled = false;
+      document.getElementById("rdnum").value = "?";
+      document.getElementById("rdletter").textContent = "B";
+    }
+    if (this.value === '3') {
+      document.getElementById("rdnum").disabled = false;
+      document.getElementById("rdnum").value = "?";
+      document.getElementById("rdletter").textContent = "C";
+    }
+}
+
+document.getElementById('cross1').onchange = function () {
+  document.getElementById("cross2").disabled = (this.value === '0');
+}
+
+document.getElementById('Split').onchange = function () {
+  document.getElementById("split1").disabled = (this.value === '0');
+  document.getElementById("split2").disabled = (this.value === '0');
+  document.getElementById("split3").disabled = (this.value === '0');
+  document.getElementById("split4").disabled = (this.value === '0');
+  document.getElementById("split5").disabled = (this.value === '0');
+}
+
+/* Following is block commented out previous code: this was from another answer on Stack Overflow.
+Interesting using DOM, but long, not sure if below has performance advantage or not.
+
+var select = document.getElementById('TfL'), input = document.getElementById("TfLroad");
+document.addEventListener("DOMContentLoaded", function(event) {
+  if (select.value === '0') {
+    input.disabled = true;
+  } else {
+    input.disabled = false;
+  }
+});
+
+select.onchange = function() {
+  if (this.value === '0') {
+    input.disabled = true;
+  } else {
+    input.disabled = false;
+  }
+}
+
+Following doesn't work yet so hid the reset button:
+document.getElementById('resetform').onclick = function () {
+  document.getElementById("TfLroad").disabled = (document.getElementById('TfL').value === '0');
+}
+
+*/
+
+</script>
+{% endblock %}
+
+<!-- Junk working code here: col-lg-10 col-lg-offset-2 -->

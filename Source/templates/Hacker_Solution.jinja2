@@ -1,21 +1,6 @@
 {% extends "base.jinja2" %}
 {% block content %}
 
-    <div class="collapse navbar-collapse" id="Street_Nav">
-      <ul class="nav navbar-nav">
-        <li><a href="/">New Search</a></li>
-        <li><a href="#" >Street Lists</a></li>
-        <li><a href="#">Street Reports</a></li>
-        <li class="active"><a href="/about.jinja2" style="background-color:#13019e">About<span class="sr-only">(current)</span></a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
-
-<div class="content container">
-
-<div class="jumbotron">
-
     <h3>Hacker Rank Solution in Python 2, works for 9 of 11 test inputs.</h3>
     <h4>I used the fantastic www.hilite.me for code formatting here... <br/>
         This is a kind of mini-database problem, requiring constructing mini database within the solution. In reality Mongo would work faster I would think!
@@ -23,8 +8,7 @@
         <a href="https://www.hackerrank.com/contests/code-and-the-curious/challenges/sell-statistics-query-system/problem" style="color:#00C300">https://www.hackerrank.com/contests/code-and-the-curious/challenges/sell-statistics-query-system/problem</a>
     </h4>
 
-<!-- HTML generated using hilite.me -->
-    <div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
+<!-- HTML generated using hilite.me --><div style="background: #f8f8f8; overflow:auto;width:auto;border:solid gray;border-width:.1em .1em .1em .8em;padding:.2em .6em;"><table><tr><td><pre style="margin: 0; line-height: 125%"> 1
  2
  3
  4
@@ -83,39 +67,106 @@
 57
 58
 59
-60</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #204a87; font-weight: bold">import</span> <span style="color: #000000">sys</span>
+60
+61
+62
+63
+64
+65
+66
+67
+68
+69
+70
+71
+72
+73
+74
+75
+76
+77
+78
+79
+80
+81
+82
+83
+84
+85
+86
+87
+88
+89
+90
+91
+92
+93
+94
+95</pre></td><td><pre style="margin: 0; line-height: 125%"><span style="color: #204a87; font-weight: bold">import</span> <span style="color: #000000">sys</span>
 
+<span style="color: #8f5902; font-style: italic"># read first integer input variable from STDIN</span>
+<span style="color: #8f5902; font-style: italic"># In this challenge, this number T is the total number of &#39;query&#39; and &#39;sale&#39;</span>
+<span style="color: #8f5902; font-style: italic"># data lines which will follow as inputs.</span>
 <span style="color: #000000">T</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #204a87">int</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sys</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">stdin</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">readline</span><span style="color: #000000; font-weight: bold">())</span>
 
+<span style="color: #8f5902; font-style: italic">#Initialise empty arrays: 1 for the &#39;sale&#39; type data inputs, and 1 for the</span>
+<span style="color: #8f5902; font-style: italic">#output integer values of the &#39;query&#39; type data inputs.</span>
 <span style="color: #000000">Sales_Store</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">[]</span>
 <span style="color: #000000">Query_Store</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">[]</span>
+
+<span style="color: #8f5902; font-style: italic"># The below &#39;conditions&#39; function will be called for each &#39;query&#39; type data input line.</span>
+
+<span style="color: #8f5902; font-style: italic"># Below this function, the main executing code begins... for Entry in range(T):</span>
+
+<span style="color: #8f5902; font-style: italic"># First this splits the parameters in the input line, and assigns first input</span>
+<span style="color: #8f5902; font-style: italic"># parameter Q or S to variable Type for query or sale type input line.</span>
+<span style="color: #8f5902; font-style: italic"># if a sale, it parses data appropriately and adds the sale info as an inner array</span>
+<span style="color: #8f5902; font-style: italic"># inside the Sales_Store array, thus assembling a simple mini-database</span>
+<span style="color: #8f5902; font-style: italic"># table within this application.</span>
+
+<span style="color: #8f5902; font-style: italic"># Otherwise if the data input line is a Query,</span>
+<span style="color: #8f5902; font-style: italic"># it uses a Python generator expression &#39;Total&#39; to generate a sum of all the sales which</span>
+<span style="color: #8f5902; font-style: italic"># are recorded, at this moment in time, in Sales_Store, which satisfy</span>
+<span style="color: #8f5902; font-style: italic"># the Query conditions.</span>
+<span style="color: #8f5902; font-style: italic"># Total calls the conditions function on each of the sale inner arrays in the database</span>
+<span style="color: #8f5902; font-style: italic"># in turn. The function sets and joins 3 condition statements as &#39;cresult&#39;,</span>
+<span style="color: #8f5902; font-style: italic"># which vary according to data in the Query. If cresult is True, then this sale</span>
+<span style="color: #8f5902; font-style: italic"># is added to the Total amount, if false it is not.</span>
+
+<span style="color: #8f5902; font-style: italic"># This works for 9 of 11 test inputs, not bad I think, but</span>
+<span style="color: #8f5902; font-style: italic"># it sets the conditions statement separately for each sale record it cycles through in</span>
+<span style="color: #8f5902; font-style: italic"># Sales_Store. If I can work out how to set conditions statement once, but still cycle</span>
+<span style="color: #8f5902; font-style: italic"># the different sales records against this one statement, it should reduce</span>
+<span style="color: #8f5902; font-style: italic"># big O-time to about O(n) and so succeed with largest 2 data input sets.</span>
+<span style="color: #8f5902; font-style: italic"># I&#39;m finding it tricky with this method because the sale record variable itself is part of cresult conditions</span>
+<span style="color: #8f5902; font-style: italic"># statement.</span>
 
 
 <span style="color: #204a87; font-weight: bold">def</span> <span style="color: #000000">conditions</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">dat</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">en</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">pi</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">ci</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">si</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">ri</span><span style="color: #000000; font-weight: bold">):</span>
 
     <span style="color: #204a87; font-weight: bold">if</span> <span style="color: #000000">en</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #0000cf; font-weight: bold">0</span><span style="color: #000000; font-weight: bold">:</span>
-        <span style="color: #000000">cond1</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;Date&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">dat</span>
+        <span style="color: #000000">cond1</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">0</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">dat</span>
     <span style="color: #204a87; font-weight: bold">else</span><span style="color: #000000; font-weight: bold">:</span>
-        <span style="color: #000000">cond1</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">dat</span> <span style="color: #ce5c00; font-weight: bold">&lt;=</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;Date&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">&lt;=</span> <span style="color: #000000">en</span><span style="color: #000000; font-weight: bold">)</span>
+        <span style="color: #000000">cond1</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">dat</span> <span style="color: #ce5c00; font-weight: bold">&lt;=</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">0</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">&lt;=</span> <span style="color: #000000">en</span><span style="color: #000000; font-weight: bold">)</span>
 
     <span style="color: #204a87; font-weight: bold">if</span> <span style="color: #000000">pi</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #0000cf; font-weight: bold">1</span><span style="color: #000000; font-weight: bold">:</span>
         <span style="color: #000000">cond2</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #3465a4">True</span>
     <span style="color: #204a87; font-weight: bold">elif</span> <span style="color: #000000">ci</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #0000cf; font-weight: bold">0</span><span style="color: #000000; font-weight: bold">:</span>
-        <span style="color: #000000">cond2</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;Product_Id&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">pi</span><span style="color: #000000; font-weight: bold">)</span>
+        <span style="color: #000000">cond2</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">1</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">pi</span><span style="color: #000000; font-weight: bold">)</span>
     <span style="color: #204a87; font-weight: bold">else</span><span style="color: #000000; font-weight: bold">:</span>
-        <span style="color: #000000">cond2</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;Product_Id&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">pi</span> <span style="color: #204a87; font-weight: bold">and</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;Category_Id&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">ci</span><span style="color: #000000; font-weight: bold">)</span>
+        <span style="color: #000000">cond2</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">1</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">pi</span> <span style="color: #204a87; font-weight: bold">and</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">2</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">ci</span><span style="color: #000000; font-weight: bold">)</span>
 
     <span style="color: #204a87; font-weight: bold">if</span> <span style="color: #000000">si</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #ce5c00; font-weight: bold">-</span><span style="color: #0000cf; font-weight: bold">1</span><span style="color: #000000; font-weight: bold">:</span>
         <span style="color: #000000">cond3</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #3465a4">True</span>
     <span style="color: #204a87; font-weight: bold">elif</span> <span style="color: #000000">ri</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #0000cf; font-weight: bold">0</span><span style="color: #000000; font-weight: bold">:</span>
-        <span style="color: #000000">cond3</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;State_Id&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">si</span><span style="color: #000000; font-weight: bold">)</span>
+        <span style="color: #000000">cond3</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">3</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">si</span><span style="color: #000000; font-weight: bold">)</span>
     <span style="color: #204a87; font-weight: bold">else</span><span style="color: #000000; font-weight: bold">:</span>
-        <span style="color: #000000">cond3</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;State_Id&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">si</span> <span style="color: #204a87; font-weight: bold">and</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #4e9a06">&quot;Region_Id&quot;</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">ri</span><span style="color: #000000; font-weight: bold">)</span>
+        <span style="color: #000000">cond3</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">3</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">si</span> <span style="color: #204a87; font-weight: bold">and</span> <span style="color: #000000">sal</span><span style="color: #000000; font-weight: bold">[</span><span style="color: #0000cf; font-weight: bold">4</span><span style="color: #000000; font-weight: bold">]</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #000000">ri</span><span style="color: #000000; font-weight: bold">)</span>
 
     <span style="color: #000000">cresult</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000">cond1</span> <span style="color: #204a87; font-weight: bold">and</span> <span style="color: #000000">cond2</span> <span style="color: #204a87; font-weight: bold">and</span> <span style="color: #000000">cond3</span>
     <span style="color: #204a87; font-weight: bold">return</span> <span style="color: #000000">cresult</span>
 
-<span style="color: #204a87; font-weight: bold">for</span> <span style="color: #000000">Entry</span> <span style="color: #204a87; font-weight: bold">in</span> <span style="color: #204a87">range</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">T</span><span style="color: #000000; font-weight: bold">):</span>
+<span style="color: #204a87; font-weight: bold">for</span> <span style="color: #000000">ind</span> <span style="color: #204a87; font-weight: bold">in</span> <span style="color: #204a87">range</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">T</span><span style="color: #000000; font-weight: bold">):</span>
     <span style="color: #000000">Type</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">d</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">p</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">s</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #000000; font-weight: bold">[</span><span style="color: #000000">item</span> <span style="color: #204a87; font-weight: bold">for</span> <span style="color: #000000">item</span> <span style="color: #204a87; font-weight: bold">in</span> <span style="color: #000000">sys</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">stdin</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">readline</span><span style="color: #000000; font-weight: bold">()</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">strip</span><span style="color: #000000; font-weight: bold">()</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">split</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #4e9a06">&quot; &quot;</span><span style="color: #000000; font-weight: bold">)]</span>
 
     <span style="color: #204a87; font-weight: bold">if</span> <span style="color: #4e9a06">&quot;.&quot;</span> <span style="color: #204a87; font-weight: bold">in</span> <span style="color: #000000">d</span><span style="color: #000000; font-weight: bold">:</span>
@@ -135,18 +186,17 @@
         <span style="color: #000000">r_id</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #0000cf; font-weight: bold">0</span>
 
     <span style="color: #204a87; font-weight: bold">if</span> <span style="color: #000000">Type</span> <span style="color: #ce5c00; font-weight: bold">==</span> <span style="color: #4e9a06">&quot;S&quot;</span><span style="color: #000000; font-weight: bold">:</span>
-        <span style="color: #000000">Sales_Store</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">append</span><span style="color: #000000; font-weight: bold">({</span><span style="color: #4e9a06">&quot;Date&quot;</span><span style="color: #000000; font-weight: bold">:</span> <span style="color: #000000">date</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #4e9a06">&quot;Product_Id&quot;</span><span style="color: #000000; font-weight: bold">:</span> <span style="color: #000000">p_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #4e9a06">&quot;Category_Id&quot;</span><span style="color: #000000; font-weight: bold">:</span> <span style="color: #000000">c_id</span><span style="color: #000000; font-weight: bold">,</span>
-                            <span style="color: #4e9a06">&quot;State_Id&quot;</span><span style="color: #000000; font-weight: bold">:</span> <span style="color: #000000">s_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #4e9a06">&quot;Region_Id&quot;</span><span style="color: #000000; font-weight: bold">:</span> <span style="color: #000000">r_id</span><span style="color: #000000; font-weight: bold">})</span>
+<span style="color: #8f5902; font-style: italic">#        Sales_Store.append({&quot;Date&quot;: date, &quot;Product_Id&quot;: p_id, &quot;Category_Id&quot;: c_id,</span>
+<span style="color: #8f5902; font-style: italic">#                            &quot;State_Id&quot;: s_id, &quot;Region_Id&quot;: r_id})</span>
+        <span style="color: #000000">Sales_Store</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">append</span><span style="color: #000000; font-weight: bold">([</span><span style="color: #000000">date</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">p_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">c_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">s_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">r_id</span><span style="color: #000000; font-weight: bold">])</span>
+
     <span style="color: #204a87; font-weight: bold">else</span><span style="color: #000000; font-weight: bold">:</span>
         <span style="color: #000000">Total</span> <span style="color: #ce5c00; font-weight: bold">=</span> <span style="color: #204a87">sum</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">conditions</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">sale</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">date</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">end</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">p_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">c_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">s_id</span><span style="color: #000000; font-weight: bold">,</span> <span style="color: #000000">r_id</span><span style="color: #000000; font-weight: bold">)</span> <span style="color: #204a87; font-weight: bold">for</span> <span style="color: #000000">sale</span> <span style="color: #204a87; font-weight: bold">in</span> <span style="color: #000000">Sales_Store</span><span style="color: #000000; font-weight: bold">)</span>
         <span style="color: #000000">Query_Store</span><span style="color: #ce5c00; font-weight: bold">.</span><span style="color: #000000">append</span><span style="color: #000000; font-weight: bold">(</span><span style="color: #000000">Total</span><span style="color: #000000; font-weight: bold">)</span>
 
 <span style="color: #204a87; font-weight: bold">for</span> <span style="color: #000000">Total</span> <span style="color: #204a87; font-weight: bold">in</span> <span style="color: #000000">Query_Store</span><span style="color: #000000; font-weight: bold">:</span>
     <span style="color: #204a87; font-weight: bold">print</span> <span style="color: #000000">Total</span>
+<span style="color: #8f5902; font-style: italic">#   or in Python 3: print (Total)</span>
 </pre></td></tr></table></div>
 
-
-</div>
-
 {% endblock %}
-

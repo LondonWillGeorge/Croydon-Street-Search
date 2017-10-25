@@ -1,6 +1,6 @@
 /* Cache problem in Chrome and IE on local computer, picking up custom CSS file!
  doubly weird is that without this file, the bootstrap striped table class shows white and grey stripes, but with this
- file empty, it shows red and white stripes.
+ file empty, it shows red and white stripes. Loaded Cache Killer Chrome extension to solve this.
  */
 
 /*
@@ -8,15 +8,117 @@
   background-color: #f00;
 }*/
 
+#tameboot .noJS {
+    text-align: center;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+}
+
 body {
     background-color: green;
+}
+
+/* body id now set to id="tameboot", as Stack Overflow answer, can then #tameboot on custom CSS to definitively
+override Bootstrap CSS! Note e.g. #tameboot a .activebutton  will NOT override, #tameboot .activebutton WILL
+ I think as subsetting like a overrides priority points gain of body root id setting */
+
+#tameboot .olive {
+    color:#72c10b;
+}
+
+#tameboot .brgreen {
+    color:#00c300;
+}
+
+/* colour active selection in navbar*/
+#tameboot .activebutton {
+    background-color:#13019e;
+}
+
+/* change format on dummy street in report */
+#tameboot .dummytitle {
+    color: black;
+    background-color: white;
+}
+
+/* checkbox styling dummy street page */
+input[type=checkbox] {
+  transform: scale(1.5);
+}
+
+#tameboot .splitchecks {
+    margin-top: 0.7em;
+    font-weight: bold;
+    width: 90%;
+}
+
+.chktext {
+    font-size: 115%
+}
+
+#tameboot .checko{
+    width: 7%;
+}
+
+#tameboot small {
+    color: green;
+}
+
+div .dummywarn {
+    color: red;
+}
+
+#tameboot .pushedup {
+    margin-top: -1.0em;
+}
+
+#tameboot .pushedagain {
+    margin-top: 0em;
+}
+
+#tameboot .metres {
+    padding-right: 8.0em;
+}
+
+#tameboot .red {
+    color: red;
+}
+
+div .title_font {
+    font-size:21px;
+}
+
+#tameboot .centre {
+    text-align: center;
+}
+
+#tameboot .centreblock {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+    width: 100em;
+}
+
+
+#tameboot .left {
+    text-align: left;
+}
+
+.date {
+    margin-top: 45px;
+}
+
+.tablehead {
+    background-color:#72c10b; margin-bottom:0; padding-bottom:0;
+}
+
+/* uses same name as original Bootstrap striped table class to change colour alternate rows*/
+.table-striped>tbody>tr:nth-child(even)>td {
+    background-color: #72c10b;
 }
 
 /*
 Move more CSS code in here later, now confirmed it is picking up this file.
 Also move JS code into JS folder, and later any images to images folder.
-button {
-    background-color: red;
-}
 */
-

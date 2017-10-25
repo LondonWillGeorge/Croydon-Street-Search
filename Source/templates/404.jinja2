@@ -1,0 +1,12 @@
+{% extends "base.jinja2" %}
+{% block content %}
+
+<h2 class="pushedup">404 Error</h2><h3 class="pushedagain">Sorry, we couldn't find the page you were looking for.<br/>
+    Try checking the address, and/or searching again from the <a href="/" class="olive">home page</a>.</h3>
+
+<img src="{{ url_for('static', filename='images/404croydon.jpg') }}" class="img-responsive">
+
+<h4>This photo is used by kind permission of leica0000 on Flickr.<br/>See https://www.flickr.com/photos/leica/
+for many Croydon photos.<br/>Copyright is still held by the original owner.</h4>
+
+{% endblock %}

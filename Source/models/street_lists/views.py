@@ -5,17 +5,15 @@ from flask import Blueprint, render_template, request, redirect, url_for
 
 import Source.models.street_lists.street_list as Lists
 
+
+
 __author__ = 'jslvtr'
 
 
 street_list_blueprint = Blueprint('street_lists', __name__)
 
-# or is it request.form['list_id'] or something like this? or just <list_id>?
-
-# </list_id> where's token error coming from?
-# , methods = ['GET', 'POST'] method not allowed error solved by POST method in route, but still Bad Request.
-
-@street_list_blueprint.route('/', methods=['POST', 'GET'])
+# Don't want let user GET this route, let it 405 if they try to do this.
+@street_list_blueprint.route('/', methods=['POST'])
 def get_streetlist():
     street = request.form['street'].strip() # strip trailing spaces form inputs, so blanks end up as -- in URL route.
     # 20-9-17 however, regex validation on client side has already ensured no trailing spaces anyway.
@@ -39,4 +37,4 @@ def load_streetlist(street, number, c1, c2, c3):
     sidelist = Lists.StreetList.get_clist(c1, c2, c3)  # second StreetList object if any Box C streets needed
     return render_template('street_lists/street_list.jinja2', mainlist=mainlist, sidelist=sidelist, number=number, street=street)
 
-    #iterate mainlist and sidelist objects in the template following Jose's Udemy tutorial item example
+    #iterates mainlist and sidelist objects in the template following Jose's Udemy tutorial item example

@@ -9,13 +9,9 @@ import datetime
 # from datetime import datetime
 from dateutil import tz
 
-# Time problem! At moment, time shown is 1 hour behind UK summer time, probably this is just UTC actually.
-# Dig Ocean server is in Amsterdam, which is 1 hour ahead of summer time, so nothing to do with this I think.
-# next commit try hack of just adding 1 hour to the time variable? nobody outside UK is going to see this now!
-
-# Do we need the date field in the URL? Would be simpler without it.
-# If not, then each time you bring up the report as GET request, it will default to current time.
-# Then bringing up actual reports saved would be a different thing, with different URL.
+# Do we need the date field auto-generated in the URL? Would be simpler without it.
+# Like this, each time you bring up the report as GET request, it will change report time to current time.
+# Then bringing up actual reports saved can be a different thing, with different URL using a Report ID.
 # Surely would need to implement logins to do that anyway...?
 # Later, can have function to save StreetReport object to a separate Mongo Reports collection,
 # and Street Reports button on page will show list of reports made by current user.
@@ -23,19 +19,24 @@ from dateutil import tz
 # Remember if underlying street data changes later, reloading the same StreetReport object could produce a different report.
 
 # A street report has properties of a title, the main street blurb, the side street blurbs, a date!
-# Also a default reference number property which is entered in a textbox, and any other comments, entered in another
+# Also a reference number property which is entered in a textbox, and any other comments, entered in another
 # textbox.
 # On street report page, these all display as ready to print, it is final page in the app as at 6-10-2017.
 
+# pass dummy status of main and c1 to 3 to this class?
 class StreetReport(object):
     def __init__(self, title, maintext, side1text=None, side2text=None, side3text=None, datestring = None,
-                 ref = "", comments = ""):
+                 maindummy=False, side1dummy=False, side2dummy=False, side3dummy=False, ref = "", comments = ""):
         self.title=title
         self.maintext = maintext
         self.side1text = side1text
         self.side2text = side2text
         self.side3text = side3text
         self.datestring = datestring
+        self.maindummy = maindummy
+        self.side1dummy = side1dummy
+        self.side2dummy = side2dummy
+        self.side3dummy = side3dummy
         self.ref = ref
         self.comments = comments
 
@@ -54,13 +55,13 @@ class StreetReport(object):
         # Road Number eg A23, A232 etc. it is included only for the larger roads in the database
         # Major roads like A23 are often TFL maintained or London Distributor roads etc. so important to know
         roadnum = strt["Road Number"]
-        if roadnum is not None and roadnum != "":
+        if roadnum is not None and roadnum != "" and roadnum != "None":
             maintained_by += "\nThis road is numbered as the " + roadnum + " at this section."
 
         return maintained_by
 
     # This method uses .maintained method of this class, so should be a class method.
-    # stringified str() street and district fields, to avoid getting int not str error.
+    # stringified str() street and district fields, to avoid getting int not str error for district "16" etc.
     @classmethod
     def main_text(cls, Main, namenum):
         main_street = str(Main["Street"])
@@ -92,7 +93,7 @@ class StreetReport(object):
 
         main_string = main_street + ", " + long_district + ", "
 
-        if mainrange == "All numbers.":
+        if mainrange == "All numbers":
             main_string += "for all property numbers in the section of the road in this district, " +  \
                            cls.maintained(Main)
         else:
@@ -111,10 +112,10 @@ class StreetReport(object):
 
             if extra_info["Borough Boundary"] == 1:
                 main_string += "\nPart of this road section is under the authority of " + extra_info["Borough1"]
-                if extra_info["Borough2"] != "":
+                if extra_info["Borough2"] != "" and extra_info["Borough2"] != "None":
                     main_string += ", and another part under the authority of " + extra_info["Borough2"] + "."
                 else:
-                    main_string +="."
+                    main_string += "."
 
             if extra_info["Split"] == 1:
                 main_string += "\nThis road section has a split status as " + extra_info["Split As"] + "."
@@ -124,8 +125,8 @@ class StreetReport(object):
 
         return report_title, main_string
 
-
-    # takes a street record dictionary as argument.
+    # Composes text string for each Box C side street which is shown on report.
+    # takes a street record dictionary 'side' as argument.
     # Uses .maintained method of the class, therefore made it a class method.
     # Needed to stringify str() street and district variables, otherwise eg District '19' crashes with int not str error
     @classmethod
@@ -135,7 +136,7 @@ class StreetReport(object):
         c_longdist = post_dist(c_district)
         if side is not None:
             c_string = c_street + ", " + c_longdist + ", " + cls.maintained(side) + "\n"
-            # not working select class A B C, everything evals to True here at moment:
+
             if any(x in {"Class A", "Class B", "Class C"} for x in side["Road Class"]):
                 c_string += " This road section is a " + side["Road Class"] + " road, and the length is "
             elif side["Road Class"] == "Service Road":
@@ -143,12 +144,16 @@ class StreetReport(object):
             else:
                 c_string += " This road section is Unclassified, and the length is "
 
-            # 'Length of Street' is a float type in Mongo for some reason!
+            # 'Length of Street' is a float type in Mongo!
             # So below convert to integer, then to string, then can concatenate.
             c_string += str(int(side["Length of Street"])) + " metres."
-            return c_string
+            try:
+                dummyside = side["Dummy"]
+            except:
+                dummyside = False
+            return c_string, dummyside
         else:
-            return ""
+            return "", False
 
     # create_report method queries Mongo again, using my custom sequenced ID numbers, to return the street info for this report.
 
@@ -164,9 +169,13 @@ class StreetReport(object):
         # was: Main = Database.find_one("Highways_Register", ObjectId(mainselection))
         Main = Database.find_one("Highways_Register", {"id": int(mainselection)})
         report_title, main_string = cls.main_text(Main, namenum)
+        try:
+            maindum = Main["Dummy"]
+        except:
+            maindum = False
         # Below initializes 2 arrays to produce 0 to 3 street record dictionaries corresponding to sideselection parameter.
         # I could do it with 1 array, but this would be less readable perhaps?
-        C = ["", "", ""]; sidetext = ["", "", ""]; sidedict = {0: side1, 1: side2, 2: side3}
+        C = ["", "", ""]; sidetext = ["", "", ""]; sidedummy = [False, False, False]; sidedict = {0: side1, 1: side2, 2: side3}
 
         # was: C[ind] = Database.find_one("Highways_Register", ObjectId(sidedict.get(ind)))
 
@@ -174,14 +183,14 @@ class StreetReport(object):
         for ind in range(3):
             if sidedict.get(ind) != "--":
                 C[ind] = Database.find_one("Highways_Register", {"id": int(sidedict.get(ind))})
-                sidetext[ind] = cls.c_text(C[ind])
+                sidetext[ind], sidedummy[ind] = cls.c_text(C[ind])
             else:
                 sidetext[ind] = ""
         # should end up with size 3 array: sidetext, to return to the webpage.
 
-        # composes date string to be displayed on the report.
+        # Time problem! At moment, time shown is 1 hour behind DST UK summer time, UTC actually.
 
-        # Now use TZ Olson Database API to Auto-detect time zones:
+        # Tried to use TZ Olson Database API to Auto-detect time zones:
         # from_zone = tz.tzutc()
         # to_zone = tz.tzlocal()
         # utc = datetime.utcnow()
@@ -190,13 +199,14 @@ class StreetReport(object):
         # # Convert time zone
         # date = utc.astimezone(to_zone)
 
-        # above tz code from Stack Overflow still producing wrong time when run on server.
-        # when run on my local computer, does produce correct time, so using hack below now for UK DST time!
+        # above TZ code from Stack Overflow still producing wrong time when run on server.
+        # when run on my local computer, does produce correct time, so using hack below add 1 hour for UK DST time!
         date = datetime.datetime.utcnow() + datetime.timedelta(hours=1)
 
         date_string = "Report time is " + date.strftime("%I:%M%p") + " on " + date.strftime("%A %d %B %Y")
 
-        return cls(report_title, main_string, sidetext[0], sidetext[1], sidetext[2], date_string)
+        return cls(report_title, main_string, sidetext[0], sidetext[1], sidetext[2], date_string,
+                   maindum, sidedummy[0], sidedummy[1], sidedummy[2])
 
     def save_to_mongo(self):
         # save to a Reports collection in Mongo, including the date here!
@@ -204,6 +214,7 @@ class StreetReport(object):
         # can follow jslvtr's way of doing this, which also needs a json method?
         pass
 
+# some old code below for interest sake:
         # C_count = len(sideselection)
 
             # .get built-in method, equivalent of select case method in VBA
