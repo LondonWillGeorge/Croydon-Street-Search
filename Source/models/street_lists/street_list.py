@@ -1,6 +1,7 @@
 from Source.common.database import Database
 from Source.common.utils import NumRange, post_dist
 
+
 # this is used to extract any digits from a string, for the 'property name or number' input on first page of app.
 # Eg type 32a it will extract 32 to check against the number range of the street sections in the database.
 # in fact if you type eg "           grgreg wegr45 t6 af47sgre" it will extract "45647"
@@ -20,16 +21,19 @@ class DigOnly(object):
 # , inner size = no. of properties in init method, each corresponds to field in Mongo collection.
 # It's a data heavy object like this, but for future flexibility, keeping for now with all these properties.
 
-# Made list_length default to 0, ID to None, which in fact means an empty streetlist, or no streetlist returned if you like.
-# if list_length and ID have no defaults, then a null result on street search will cause WSGI long error message, not what we want.
+# Made list_length default to 0, ID to None, which in fact means an empty streetlist,
+# or no streetlist returned if you like.
+# if list_length and ID have no defaults, then a null result on street search will cause WSGI long error message,
+# not what we want.
 
 # long_dist is the full name of Postal District, obtained using the utils .post_dist method.
 
+
 class StreetList(object):
-    def __init__(self, ID=None, list_length=0, street=None, district=None, long_dist=None, numrange=None, adoption=None, rdclass=None, length=None,
-                 road_no=None, has_tfl=None, tfl_rd=None, cross_boro=None, boro1=None, boro2=None,
-                 is_split=None, split=None, dummy=None):
-        self.id = ID
+    def __init__(self, i_d=None, list_length=0, street=None, district=None, long_dist=None, numrange=None,
+                 adoption=None, rdclass=None, length=None, road_no=None, has_tfl=None, tfl_rd=None, cross_boro=None,
+                 boro1=None, boro2=None, is_split=None, split=None, dummy=None):
+        self.id = i_d
         self.list_length = list_length
         self.street = street
         self.district = district
@@ -52,23 +56,23 @@ class StreetList(object):
     # so it could be passed in the Flask session variable. But maybe that is bad approach anyway.
     def serialize(self):
         return {
-        'id': self.id,
-        'list_length': self.list_length,
-        'street': self.street,
-        'district': self.district,
-        'long_dist': self.long_dist,
-        'numrange': self.numrange,
-        'adoption': self.adoption,
-        'rdclass':self.rdclass,
-        'length': self.length,
-        'road_no': self.road_no,
-        'has_tfl': self.has_tfl,
-        'tfl_rd': self.tfl_rd,
-        'cross_boro': self.cross_boro,
-        'boro1': self.boro1,
-        'boro2': self.boro2,
-        'is_split': self.is_split,
-        'split': self.split
+            'id': self.id,
+            'list_length': self.list_length,
+            'street': self.street,
+            'district': self.district,
+            'long_dist': self.long_dist,
+            'numrange': self.numrange,
+            'adoption': self.adoption,
+            'rdclass': self.rdclass,
+            'length': self.length,
+            'road_no': self.road_no,
+            'has_tfl': self.has_tfl,
+            'tfl_rd': self.tfl_rd,
+            'cross_boro': self.cross_boro,
+            'boro1': self.boro1,
+            'boro2': self.boro2,
+            'is_split': self.is_split,
+            'split': self.split
         }
 
 # Processes data retrieved already from Mongo, and returns a StreetList class object.
@@ -80,8 +84,8 @@ class StreetList(object):
     @classmethod
     def populate_list(cls, st_list):
         list_length = len(st_list)
-        ID, street, district, long_dist, numrange, adoption, rdclass, length, road_no, has_tfl, tfl_rd, cross_boro, boro1, boro2, \
-        is_split, split, dummy = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
+        i_d, street, district, long_dist, numrange, adoption, rdclass, length, road_no, has_tfl, tfl_rd, cross_boro, \
+            boro1, boro2, is_split, split, dummy = [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], [], []
 
 # , visible   , []
 
@@ -98,7 +102,7 @@ class StreetList(object):
         # so will throw exception. Thus except clause: dummy default to false as normal records are not dummies
         # visible default to true, as we certainly DO want to see normal records in the results.
         for ind in range(list_length):
-            ID.append(int(st_list[ind]["id"]))
+            i_d.append(int(st_list[ind]["id"]))
             street.append(st_list[ind]["Street"])
             district.append(st_list[ind]["District"])
             dist_name = post_dist(st_list[ind]["District"])
@@ -110,22 +114,22 @@ class StreetList(object):
             road_no.append(st_list[ind]["Road Number"])
             try:
                 dummy.append(st_list[ind]["Dummy"])
-            except:
+            except (KeyError, ValueError, TypeError, NameError):
                 dummy.append(False)
             # try:
             #     visible.append(st_list[ind]["Visible"])
             # except:
             #     visible.append(True)
 
-            Check3qs = Database.find_one("Three_Questions", {"Street": street[ind], "District": district[ind]})
-            if Check3qs is not None:
-                has_tfl.append(Check3qs["TfL Side Road"])
-                tfl_rd.append(Check3qs["Road1"])
-                cross_boro.append(Check3qs["Borough Boundary"])
-                boro1.append(Check3qs["Borough1"])
-                boro2.append(Check3qs["Borough2"])
-                is_split.append(Check3qs["Split"])
-                split.append(Check3qs["Split As"])
+            check3qs = Database.find_one("Three_Questions", {"Street": street[ind], "District": district[ind]})
+            if check3qs is not None:
+                has_tfl.append(check3qs["TfL Side Road"])
+                tfl_rd.append(check3qs["Road1"])
+                cross_boro.append(check3qs["Borough Boundary"])
+                boro1.append(check3qs["Borough1"])
+                boro2.append(check3qs["Borough2"])
+                is_split.append(check3qs["Split"])
+                split.append(check3qs["Split As"])
             else:
                 has_tfl.append(None)
                 tfl_rd.append(None)
@@ -135,9 +139,8 @@ class StreetList(object):
                 is_split.append(None)
                 split.append(None)
 
-
-        return cls(ID, list_length, street, district, long_dist, numrange, adoption, rdclass, length, road_no, has_tfl, tfl_rd,
-                   cross_boro, boro1, boro2, is_split, split, dummy)
+        return cls(i_d, list_length, street, district, long_dist, numrange, adoption, rdclass, length, road_no,
+                   has_tfl, tfl_rd, cross_boro, boro1, boro2, is_split, split, dummy)
 
 # Called from main page, retrieves main street info from Mongo
 # then calls populate_list method in this class to populate StreetList object with this info.
@@ -147,7 +150,10 @@ class StreetList(object):
     def get_mainlist(cls, streetpart, name_or_num=""):
         try:
             property_num = int(name_or_num.strip().translate(DigOnly()))
-            super_mainlist = [street for street in Database.find("Highways_Register", {'$and': [{"Street": {'$regex': streetpart, '$options': 'i'}}, {"Visible": {'$ne': False}}]})]
+            super_mainlist = [street for street in
+                              Database.find("Highways_Register",
+                                            {'$and': [{"Street": {'$regex': streetpart, '$options': 'i'}},
+                                                      {"Visible": {'$ne': False}}]})]
             # {'$and':[             , {"Visible": {'$ne': False}}       ]}
             mainlist = []
             if len(super_mainlist) > 0:
@@ -160,7 +166,7 @@ class StreetList(object):
             else:
                 return cls()
 
-        except:
+        except (TypeError, KeyError, ValueError, NameError):
             mainlist = [street for street in Database.find("Highways_Register",
                                                            {"Street": {'$regex': streetpart, '$options': 'i'}})]
             if len(mainlist) == 0:

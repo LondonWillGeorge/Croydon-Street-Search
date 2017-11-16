@@ -7,8 +7,9 @@ __author__ = 'Will Croxford'
 
 street_report_blueprint = Blueprint('street_reports', __name__)
 
+
 # sideselection array has 0 to 3 length. Assume here for now max. 3 length.
-# validate JS client side to limit 3 selections?...
+# at moment if more than 3 streets selected, iterates over first 3.
 @street_report_blueprint.route('/<string:number>', methods=['POST', 'GET'])
 def get_streetreport(number):
     # gets my custom sequential ids of radio and any checkboxes selected, NB best to leave original Mongo IDs in place!
@@ -28,15 +29,14 @@ def get_streetreport(number):
     return redirect(url_for('.load_streetreport', mainselection=mainselection, side1=side[0], side2=side[1],
                             side3=side[2], number=number))
 
+
+# 2nd method to put variables in URL here, call create_report in 2nd method not first!
 @street_report_blueprint.route('/HouseNo:<string:number>/Street:<mainselection>/BoxC:<side1>/BoxC:<side2>/BoxC:<side3>',
                                methods=['POST', 'GET'])
 def load_streetreport(mainselection, side1, side2, side3, number):
     # report is a StreetReport object, whose properties will be accessed in Jinja.
     report = Report.StreetReport.create_report(mainselection, side1, side2, side3, number)
     return render_template('street_reports/street_report.jinja2', report=report)
-
-
-#2nd method to put variables in URL here, call report in 2nd method not first!:
 
     # gave up trying to pass object in the session variable for now, could be bad approach also.
     # mainlist = flask.session['mainlist']

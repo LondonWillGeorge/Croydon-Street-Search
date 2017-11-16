@@ -1,10 +1,10 @@
 # not created yet! - Will Croxford
 # If useful, will implement user logins later, with admin only permission to view
-# user search histories, which will be stored after each search
+# other users' search histories, which will be stored after each search
 # in a Mongo collection called "Users"
 
-from flask import Blueprint, request, session, url_for, render_template
-from werkzeug.utils import redirect
+from flask import Blueprint  #, request, session, url_for, render_template
+# from werkzeug.utils import redirect
 # from src.models.users.user import User
 # import src.models.users.errors as UserErrors
 # import src.models.users.decorators as user_decorators

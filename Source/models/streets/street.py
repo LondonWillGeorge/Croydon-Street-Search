@@ -1,28 +1,28 @@
 from Source.common.database import Database
 from Source.common.utils import dist_code, post_dist
 
-# for entering a new street into the database
-# (dummy at the moment, so 'dummy' property defaults to true)
-# onb to ene fields are for the odd and even street numbers which delineate this 'street section'
-# The Three_Questions collection fields of has_tfl cross_boro is_split default to 0 ie no data here
-# these are Boolean fields.
 
+# The Three_Questions collection fields: has_tfl, cross_boro, is_split default to 0 ie no data here
+# these are Boolean fields.
 # note a consecutive ID field was created for Three_questions collection,
 # but not used in other methods as at 13.10.17. So using same ID field as Highw_Register collection
 # for Three_Questions collection, to keep it simpler, and aligned at least for any future expansion.
 class Street(object):
+    """for entering a new street into the database (dummy at the moment, so 'dummy' property defaults to true)
+    onb to ene fields are for the odd and even street numbers which delineate this 'street section'"""
     def __init__(self, street, dist_number, dummy=True, visible=True, onb=None, one=None, enb=None, ene=None,
                  adoption=None, rdclass=None, length=None, road_no=None, has_tfl=0, tfl_rd=None, cross_boro=0,
-                 boro1=None, boro2=None, is_split=0, split=None, ID=None):
-        if ID is not None:
-            self.id = ID
+                 boro1=None, boro2=None, is_split=0, split=None, i_d=None):
+        if i_d is not None:
+            self.id = i_d
         else:
             new_id = int(Database.find_one("High_Reg_Counter", {})['seq']) + 1
             self.id = new_id
         self.dummy = dummy
         self.visible = visible
         self.street = street
-        # this converts the input form district number dist_number to short district code, as previously used in database.
+        # this converts the input form district number dist_number to short district code,
+        # as previously used in database.
         self.district = dist_code(dist_number)
         # This converts the code to the long district name.
         self.long_dist = post_dist(self.district)
@@ -53,27 +53,31 @@ class Street(object):
         try:
             Database.update("Highways_Register", {"id": self.id}, self.json1(self.id))
             Database.update("Three_Questions", {"ID": self.id}, self.json2(self.id))
-        except:
-            return "Couldn't create new street sorry because an error occurred, you can try again or contact the administrator."
+        except TypeError:
+            return """Somehow, a 'type error' has occurred. Sorry, if you have time to email the admin with any details
+                   of the search you did to produce this error, we would be very very grateful! Please try again."""
+        except (ValueError, NameError, RuntimeError, SyntaxError):
+            return """Somehow, an error has occurred. Sorry, if you have time to email the admin with any details
+                   of the search you did to produce this error, we would be very very grateful! Please try again."""
         Database.update("High_Reg_Counter", {"_id": "streets"}, {"seq": self.id})  # args: collection, query, data
         return "Congratulations! Your Dummy street, \"{0}\" has been created in the database." .format(self.street)
-            # return self.id
+        # return self.id
 
     def json1(self, newid):
         return {
             "Dummy": self.dummy,
             "Visible": self.visible,
-            "Street" : self.street,
-            "District" : self.district,
-            "Adoption Status" : self.adoption,
-            "Road Class" : self.rdclass,
-            "Length of Street" : self.length,
-            "Odd Number Beginning" : self.onb,
-            "Odd Number Ending" : self.one,
-            "Even Number Beginning" : self.enb,
-            "Even Number Ending" : self.ene,
-            "Road Number" : self.road_no,
-            "id" : newid
+            "Street": self.street,
+            "District": self.district,
+            "Adoption Status": self.adoption,
+            "Road Class": self.rdclass,
+            "Length of Street": self.length,
+            "Odd Number Beginning": self.onb,
+            "Odd Number Ending": self.one,
+            "Even Number Beginning": self.enb,
+            "Even Number Ending": self.ene,
+            "Road Number": self.road_no,
+            "id": newid
         }
 
     def json2(self, newid):

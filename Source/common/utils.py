@@ -15,26 +15,28 @@ from passlib.hash import pbkdf2_sha512
 import re
 from flask import request, url_for
 
+
 # Used to convert short District code saved in Mongo district field into the full name of the Postal District
 # .get method defaults to 'Croydon' with any unknown or blank values in database.
 def post_dist(district):
-    Dist_Codes = {"CL": "Coulsdon CR5", "PR": "Purley CR8", "25" and 25: "London SE25", "16" and 16: "London SW16",
+    dist_codes = {"CL": "Coulsdon CR5", "PR": "Purley CR8", "25" and 25: "London SE25", "16" and 16: "London SW16",
                   "19" and 19: "London SW19", "BE": "Beckenham BR3", "KN": "Kenley CR8", "SC": "South Croydon CR2",
                   "TH": "Thornton Heath CR7", "WA": "Warlingham CR6", "WH": "Whyteleafe CR3"}
-    return Dist_Codes.get(district, "Croydon (CR0, CR2, CR7 or CR9)")
+    return dist_codes.get(district, "Croydon (CR0, CR2, CR7 or CR9)")
+
 
 # this kind of reverse of post_dict, used when new street created, user chooses the full district name,
 # and this returns number from the form, passed here, which then gives short code for saving in the database.
 # NB originally to invert this dictionary quick courtesy of SO did: inv_map = {v: k for k, v in Dist_Codes.items()}
 def dist_code(distnum):
-    Longdistricts = {'1': 'CL', '2': 'PR', '3': 25, '4': 16, '11': 19,
+    longdistricts = {'1': 'CL', '2': 'PR', '3': 25, '4': 16, '11': 19,
                      '10': 'BE', '5': 'KN', '6': 'SC', '7': 'TH',
                      '8': 'WA', '9': 'WH'}
-    return Longdistricts.get(distnum, "CR")
+    return longdistricts.get(distnum, "CR")
 
 
 # In the NumRange init method, argument passed to street_section must be one dictionary record
-#  in Highways_Register collection, so it should have all the named fields.
+# in Highways_Register collection, so it should have all the named fields.
 class NumRange(object):
     def __init__(self, street_section):
         try:
@@ -44,10 +46,10 @@ class NumRange(object):
             self.ene = int(street_section["Even Number Ending"])
             if min(self.onb, self.one, self.enb, self.ene) > 0:
                 self.range = str(self.onb) + " to " + str(self.one) + " Odds, and " + str(self.enb) + " to " \
-                + str(self.ene) + " Evens"
+                 + str(self.ene) + " Evens"
             else:
                 self.range = "All numbers"
-        except:
+        except (ValueError, TypeError):
             self.range = "All numbers"
 
     # pass property_num integer as the argument here, MUST be an integer passed anyway,
@@ -58,7 +60,7 @@ class NumRange(object):
     def in_range(self, number=0):
         try:
             range_boolean = (number >= self.onb or number >= self.enb) and (number <= self.one or number <= self.ene)
-        except:
+        except (TypeError, ValueError):
             range_boolean = True
         return range_boolean
 
@@ -103,7 +105,8 @@ class Utils(object):
 
         return pbkdf2_sha512.verify(password, hashed_password)
 
-    # from Flask pocoo docs and SO answer, default URL set to home function i.e. / root route!
+    # from Flask pocoo docs and SO answer which embellished this, default URL set to home function i.e. / root route!
+    # this can be called with argument of page you want to redirect to.
     def redirect_url(bluep_fn_name='home'):
         return request.args.get('next') or \
                request.referrer or \

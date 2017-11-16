@@ -1,5 +1,5 @@
 # import pymongo
-import dateutil
+# import dateutil
 
 from Source.common.database import Database
 from Source.common.utils import NumRange, post_dist
@@ -7,7 +7,7 @@ from Source.common.utils import NumRange, post_dist
 
 import datetime
 # from datetime import datetime
-from dateutil import tz
+# from dateutil import tz
 
 # Do we need the date field auto-generated in the URL? Would be simpler without it.
 # Like this, each time you bring up the report as GET request, it will change report time to current time.
@@ -16,18 +16,20 @@ from dateutil import tz
 # Later, can have function to save StreetReport object to a separate Mongo Reports collection,
 # and Street Reports button on page will show list of reports made by current user.
 
-# Remember if underlying street data changes later, reloading the same StreetReport object could produce a different report.
+# Remember if underlying street data changes later,
+# reloading the same StreetReport object could produce a different report.
 
 # A street report has properties of a title, the main street blurb, the side street blurbs, a date!
 # Also a reference number property which is entered in a textbox, and any other comments, entered in another
 # textbox.
 # On street report page, these all display as ready to print, it is final page in the app as at 6-10-2017.
 
+
 # pass dummy status of main and c1 to 3 to this class?
 class StreetReport(object):
-    def __init__(self, title, maintext, side1text=None, side2text=None, side3text=None, datestring = None,
-                 maindummy=False, side1dummy=False, side2dummy=False, side3dummy=False, ref = "", comments = ""):
-        self.title=title
+    def __init__(self, title, maintext, side1text=None, side2text=None, side3text=None, datestring=None,
+                 maindummy=False, side1dummy=False, side2dummy=False, side3dummy=False, ref="", comments=""):
+        self.title = title
         self.maintext = maintext
         self.side1text = side1text
         self.side2text = side2text
@@ -60,46 +62,9 @@ class StreetReport(object):
 
         return maintained_by
 
-    # This method uses .maintained method of this class, so should be a class method.
-    # stringified str() street and district fields, to avoid getting int not str error for district "16" etc.
-    @classmethod
-    def main_text(cls, Main, namenum):
-        main_street = str(Main["Street"])
-        main_district = str(Main["District"])
-        long_district = post_dist(main_district)
-        propnum = str(namenum)
-        if propnum == "--":
-            report_title = "(No property name or number given) " + main_street + ", " + long_district
-        else:
-            report_title = propnum + " " + main_street + ", " + long_district
-
-        # Due to funny way data copied at moment, below query needs to be a bit more complicated.
-        # Would need to clean up underlying Mongo collection, then can simplify below and avoid slight expensive regex.
-        # Or better still, just join collections together with the street and district fields.
-        try:
-            Dist_Or_Integer = int(main_district)
-        except:
-            Dist_Or_Integer = main_district
-
-        extra_info = Database.find_one("Three_Questions",
-                                       {"Street": {'$regex': main_street},
-                                        "District": {'$in': [Dist_Or_Integer, str(main_district), ""]}})
-        # was: extra_info = Database.find_one("Three_Questions", {"Street": main_street, "District": main_district})
-
-
-        # main_string and extra_info compose text strings to show on the report page, according to
-        # content of the returned data on chosen street(s) from Mongo.
-        mainrange = NumRange(Main).range
-
-        main_string = main_street + ", " + long_district + ", "
-
-        if mainrange == "All numbers":
-            main_string += "for all property numbers in the section of the road in this district, " +  \
-                           cls.maintained(Main)
-        else:
-            main_string += "in the section from " + mainrange + ", " + \
-                      cls.maintained(Main)
-
+    # called by main_text method in this class, to reduce its (McCabe) complexity.
+    @staticmethod
+    def add3questions(extra_info, main_string):
         # if there is no street in Three_Questions collection with this street and district name,
         # extra_info will return None.
         if extra_info is not None:
@@ -122,6 +87,48 @@ class StreetReport(object):
         else:
             main_string += " This road section is not a TfL Side Road, does not cross another council's boundary, " \
                            "and doesn't have any split status."
+        return main_string
+
+    # This method uses .maintained method of this class, so should be a class method.
+    # stringified str() street and district fields, to avoid getting int not str error for district "16" etc.
+    @classmethod
+    def main_text(cls, main, namenum):
+        main_street = str(main["Street"])
+        main_district = str(main["District"])
+        long_district = post_dist(main_district)
+        propnum = str(namenum)
+        if propnum == "--":
+            report_title = "(No property name or number given) " + main_street + ", " + long_district
+        else:
+            report_title = propnum + " " + main_street + ", " + long_district
+
+        # Due to funny way data copied at moment, below query needs to be a bit more complicated.
+        # Would need to clean up underlying Mongo collection, then can simplify below and avoid slight expensive regex.
+        # Or better still, just join collections together with the street and district fields.
+        try:
+            dist_or_integer = int(main_district)
+        except (ValueError, TypeError):
+            dist_or_integer = main_district
+
+        extra_info = Database.find_one("Three_Questions",
+                                       {"Street": {'$regex': main_street},
+                                        "District": {'$in': [dist_or_integer, str(main_district), ""]}})
+        # was: extra_info = Database.find_one("Three_Questions", {"Street": main_street, "District": main_district})
+
+        # main_string and extra_info compose text strings to show on the report page, according to
+        # content of the returned data on chosen street(s) from Mongo.
+        mainrange = NumRange(main).range
+
+        main_string = main_street + ", " + long_district + ", "
+
+        if mainrange == "All numbers":
+            main_string += "for all property numbers in the section of the road in this district, " +  \
+                           cls.maintained(main)
+        else:
+            main_string += "in the section from " + mainrange + ", " + \
+                      cls.maintained(main)
+
+        main_string = cls.add3questions(extra_info, main_string)
 
         return report_title, main_string
 
@@ -149,17 +156,18 @@ class StreetReport(object):
             c_string += str(int(side["Length of Street"])) + " metres."
             try:
                 dummyside = side["Dummy"]
-            except:
+            except (KeyError, ValueError, TypeError, NameError):
                 dummyside = False
             return c_string, dummyside
         else:
             return "", False
 
-    # create_report method queries Mongo again, using my custom sequenced ID numbers, to return the street info for this report.
+    # create_report method queries Mongo again, using my custom sequenced ID numbers,
+    # to return the street info for this report.
 
     # mainselection is my custom created Mongo ID field number for the main street,
-    # sideselection is same ID for any side streets 1 2 3, namenum is string representing the property name or number
-    # which user entered on the first search page.
+    # side1, side2, side3 are same ID numbers for any side streets 1 2 3,
+    # namenum is string representing the property name or number, which user entered on the first search page.
 
     # 25-9-17 changed search to query on id field which I have created, not Mongo default _id ObjectId field.
     # So shorter RESTful type URLs can be produced, using this id field.
@@ -167,23 +175,29 @@ class StreetReport(object):
     @classmethod
     def create_report(cls, mainselection, side1, side2, side3, namenum):
         # was: Main = Database.find_one("Highways_Register", ObjectId(mainselection))
-        Main = Database.find_one("Highways_Register", {"id": int(mainselection)})
-        report_title, main_string = cls.main_text(Main, namenum)
+        # maindum shows if street is dummy or real.
+        main = Database.find_one("Highways_Register", {"id": int(mainselection)})
+        report_title, main_string = cls.main_text(main, namenum)
         try:
-            maindum = Main["Dummy"]
-        except:
+            maindum = main["Dummy"]
+        except (KeyError, ValueError, TypeError, NameError):
             maindum = False
-        # Below initializes 2 arrays to produce 0 to 3 street record dictionaries corresponding to sideselection parameter.
+        # Below initializes 2 arrays to produce 0 to 3 street record dictionaries,
+        # corresponding to sideselection parameter.
         # I could do it with 1 array, but this would be less readable perhaps?
-        C = ["", "", ""]; sidetext = ["", "", ""]; sidedummy = [False, False, False]; sidedict = {0: side1, 1: side2, 2: side3}
+        # sidedummy is dummy street field to show if street is real or dummy one.
+        c = ["", "", ""]
+        sidetext = ["", "", ""]
+        sidedummy = [False, False, False]
+        sidedict = {0: side1, 1: side2, 2: side3}
 
-        # was: C[ind] = Database.find_one("Highways_Register", ObjectId(sidedict.get(ind)))
+        # was: c[ind] = Database.find_one("Highways_Register", ObjectId(sidedict.get(ind)))
 
-        # retrieves info from Mongo on 0 to 3 side streets user has chosen.
+        # retrieves info from Mongo on 0 to 3 side streets user has chosen, using their ID numbers side1 side2 side3.
         for ind in range(3):
             if sidedict.get(ind) != "--":
-                C[ind] = Database.find_one("Highways_Register", {"id": int(sidedict.get(ind))})
-                sidetext[ind], sidedummy[ind] = cls.c_text(C[ind])
+                c[ind] = Database.find_one("Highways_Register", {"id": int(sidedict.get(ind))})
+                sidetext[ind], sidedummy[ind] = cls.c_text(c[ind])
             else:
                 sidetext[ind] = ""
         # should end up with size 3 array: sidetext, to return to the webpage.
@@ -217,13 +231,14 @@ class StreetReport(object):
 # some old code below for interest sake:
         # C_count = len(sideselection)
 
-            # .get built-in method, equivalent of select case method in VBA
-            # current_side = {0: sideselection[0], 1: sideselection[1], 2: sideselection[2]}.get(index)  # , "" .get default not needed within this narrow usage?
-            #
-            # if current_side is not None:
-            #     boxC_strings.append(StreetReport.c_streets(current_side))
-            # else:
-            #     break
+        # .get built-in method, equivalent of select case method in VBA
+        # current_side = {0: sideselection[0], 1: sideselection[1], 2: sideselection[2]}.get(index)
+        #  , "" .get default not needed within this narrow usage?
+        #
+        # if current_side is not None:
+        #     boxC_strings.append(StreetReport.c_streets(current_side))
+        # else:
+        #     break
 
         # loop 3 times:
         # if length array >= current index,
