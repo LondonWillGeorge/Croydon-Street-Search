@@ -17,8 +17,12 @@ class User(object):
 
     @classmethod
     def get_by_email(cls, email):
+        # need users table in the MongoDB
         data = Database.find_one("users", {"email": email})
         if data is not None:
+            # a class method decorator enables this to return the whole class object
+            # if useful, can alter all instances of a class inside a class method, but not the instance itself
+            # **data will return all the keyword dict arguments, but not any non-dict arguments            
             return cls(**data)
 
     @classmethod
