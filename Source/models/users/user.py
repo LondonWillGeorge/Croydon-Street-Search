@@ -2,6 +2,8 @@
 # Customise to this application
 import datetime
 import uuid
+# use session to pass email and password, not a cookie, which is dangerous because client-side, 
+# therefore can be changed by user or attacker, password must be encrypted when sent in session, as session info can be seen
 from flask import session
 from src.common.database import Database
 from src.models.blog import Blog
