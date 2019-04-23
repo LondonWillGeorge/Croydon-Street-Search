@@ -90,4 +90,4 @@ class User(object):
         }
 
     def save_to_mongo(self):
-Database.insert("users", self.json())
+        Database.insert("users", self.json())
